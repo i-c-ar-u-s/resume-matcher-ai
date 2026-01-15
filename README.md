@@ -17,18 +17,32 @@ This is not a generic ATS scanner. It acts as a "Strategic Career Architect" tha
 
 1.  **Clone the repository**:
     ```bash
-    git clone https://github.com/yourusername/resume-matcher.git
-    cd resume-matcher
+    git clone https://github.com/i-c-ar-u-s/resume-matcher-ai.git
+    cd resume-matcher-ai
     ```
 
-2.  **Install dependencies**:
+
+2.  **Create a Virtual Environment** (Recommended):
+    ```bash
+    python -m venv venv
+    # Windows
+    .\venv\Scripts\activate
+    # Mac/Linux
+    source venv/bin/activate
+    ```
+
+3.  **Install dependencies**:
     ```bash
     pip install -r requirements.txt
     ```
 
 3.  **Set up API Key**:
     *   Create a `.env` file in the root directory.
-    *   Add your Google Gemini API key:
+    *   (Optional) You can copy the example file:
+        ```bash
+        cp .env.example .env
+        ```
+    *   Add your Google Gemini API key to the `.env` file:
         ```
         GOOGLE_API_KEY=your_actual_api_key_here
         ```
