@@ -9,16 +9,23 @@ from pathlib import Path
 env_path = Path(__file__).parent / '.env'
 load_dotenv(dotenv_path=env_path)
 
+# Try fetching from os.getenv first, then st.secrets (for Cloud)
+import streamlit as st
 api_key = os.getenv("GOOGLE_API_KEY")
+
 if not api_key:
-    # Fallback/Debug: try to find it in the current working directory if not found above
-    api_key = os.getenv("GOOGLE_API_KEY")
+    try:
+        api_key = st.secrets["GOOGLE_API_KEY"]
+    except Exception:
+        pass
 
 # Configure Gemini
 if api_key:
     genai.configure(api_key=api_key.strip())
 else:
-    print("Warning: GOOGLE_API_KEY not found in environment.")
+    # We won't print here to avoid clutter logs unless it's critical, 
+    # but the analyze function will catch it.
+    pass
 
 def extract_text_from_pdf(uploaded_file):
     """Extracts text from a PDF file object."""
@@ -94,10 +101,17 @@ def analyze_resume_gemini(resume_text, jd_text):
     """
 
     try:
-        # User requested gemini-2.0-flash
-        model = genai.GenerativeModel('gemini-2.0-flash-exp')
+        # User requested gemini-2.0-flash, but for stability on Cloud we fallback to 1.5 if needed
+        # Or let's stick to a known stable model for production
+        try:
+             model = genai.GenerativeModel('gemini-2.0-flash-exp')
+             response = model.generate_content(prompt)
+        except Exception as e:
+             # Fallback to standard flash if experimental fails (common in some regions/keys)
+             print(f"Gemini 2.0 Exp failed, falling back to 1.5 Flash. Error: {e}")
+             model = genai.GenerativeModel('gemini-1.5-flash')
+             response = model.generate_content(prompt)
         
-        response = model.generate_content(prompt)
         parsed_result = parse_json_response(response.text)
         
         if parsed_result:

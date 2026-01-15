@@ -20,6 +20,10 @@ with st.sidebar:
     
     analyze_btn = st.button("Analyze Resumes", type="primary")
 
+    from utils import api_key
+    if not api_key:
+        st.warning("⚠️ API Key not found. Please set GOOGLE_API_KEY in Secrets.")
+
 # --- Main Content ---
 if analyze_btn:
     if not jd_text:
